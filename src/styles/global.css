@@ -1,0 +1,24 @@
+/**
+ * Reset mínimo de página, necesario porque la app ahora vive en un
+ * sitio real a pantalla completa (antes vivía embebida como artefacto
+ * dentro de una tarjeta de Claude.ai con una altura fija de 680px).
+ * No toca ni un solo estilo del himnario en sí; solo asegura que
+ * html/body/#root ocupen el 100% del viewport en cualquier
+ * computadora, tableta o celular.
+ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #060f13;
+}
