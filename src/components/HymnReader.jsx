@@ -17,9 +17,18 @@ export default function HymnReader({
   fontSize,
   setFontSize,
   goToAdjacent,
+  isMobile,
+  onBack,
 }) {
   return (
     <div className="reader-panel">
+      {isMobile && selected && (
+        <div className="mobile-topbar">
+          <button className="back-btn" onClick={onBack}>
+            ← Atrás
+          </button>
+        </div>
+      )}
       {copied && (
         <div className="toast">
           <Check size={14} /> Letra copiada

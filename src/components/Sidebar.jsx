@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Sun, Minus, Plus, ListMusic } from 'lucide-react';
+import { Moon, Sun, Minus, Plus, ListMusic, X } from 'lucide-react';
 import CATEGORY_ICONS from '../utils/categoryIcons';
 
 // El logo vive en /public/logo-bellevue.png. Los archivos de /public se
@@ -9,9 +9,13 @@ import CATEGORY_ICONS from '../utils/categoryIcons';
 const logoBellevue = '/logo-bellevue.png';
 
 /**
- * Barra lateral izquierda (~18%): logo, navegación por categorías,
- * interruptor de tema y control de tamaño de letra.
- * Misma lógica y estructura visual del artefacto original.
+ * Barra lateral izquierda (~18% en escritorio): logo, navegación por
+ * categorías, interruptor de tema y control de tamaño de letra.
+ *
+ * En móvil (<768px), App.jsx solo monta este componente cuando el
+ * usuario abre el menú, y aquí se muestra como panel superpuesto a
+ * pantalla completa con un botón para cerrarlo (misma lógica y
+ * contenido, solo cambia cómo se presenta en pantallas angostas).
  */
 export default function Sidebar({
   navCategories,
@@ -22,13 +26,21 @@ export default function Sidebar({
   setDark,
   fontSize,
   setFontSize,
-  sidebarOpen,
+  isMobile,
+  onClose,
 }) {
   return (
-    <div
-      className="sidebar"
-      style={{ display: window.innerWidth < 700 && !sidebarOpen ? 'none' : 'flex' }}
-    >
+    <div className="sidebar">
+      {isMobile && (
+        <div className="mobile-topbar">
+          <span className="font-display" style={{ fontWeight: 700, fontSize: 15 }}>
+            Categorías
+          </span>
+          <button className="menu-btn" onClick={onClose} aria-label="Cerrar menú">
+            <X size={18} />
+          </button>
+        </div>
+      )}
       <div className="brand-row">
         <div className="brand-mark">
           <img src={logoBellevue} alt="Bellevue Iglesia de Cristo" />

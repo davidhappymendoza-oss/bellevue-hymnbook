@@ -28,6 +28,19 @@ export default function Himnario() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Detecta si estamos en una pantalla móvil (<768px) y se mantiene
+  // actualizado si la ventana cambia de tamaño o gira el dispositivo.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 768
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 768px)');
+    const handleChange = () => setIsMobile(mql.matches);
+    handleChange();
+    mql.addEventListener('change', handleChange);
+    return () => mql.removeEventListener('change', handleChange);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -86,45 +99,78 @@ export default function Himnario() {
     if (nextIdx >= 0 && nextIdx < filtered.length) setSelected(filtered[nextIdx]);
   };
 
+  // Navegación tipo móvil: el botón "← Atrás" del lector regresa a la lista.
+  const handleBackToList = () => setSelected(null);
+
   const theme = dark ? 'theme-dark' : 'theme-light';
+
+  // --- Reglas de qué mostrar ---
+  // Escritorio (isMobile === false): SIEMPRE se ven los tres paneles,
+  // exactamente como en el diseño original. No cambia nada aquí.
+  //
+  // Móvil (isMobile === true): una sola pantalla completa a la vez.
+  //   - Si el menú de categorías está abierto -> se ve solo el Sidebar (superpuesto).
+  //   - Si no hay himno seleccionado -> se ve solo la lista, a 100% de ancho.
+  //   - Si hay un himno seleccionado -> se ve solo el lector, a 100% de ancho,
+  //     con el botón "← Atrás" para volver a la lista.
+  const showSidebar = !isMobile || sidebarOpen;
+  const showList = !isMobile || (!selected && !sidebarOpen);
+  const showReader = !isMobile || (!!selected && !sidebarOpen);
 
   return (
     <div className={theme} style={{ minHeight: '100vh', height: '100%' }}>
       <div className="himnario-root">
-        <Sidebar
-          navCategories={navCategories}
-          category={category}
-          setCategory={setCategory}
-          favorites={favorites}
-          dark={dark}
-          setDark={setDark}
-          fontSize={fontSize}
-          setFontSize={setFontSize}
-          sidebarOpen={sidebarOpen}
-        />
-        <HymnList
-          search={search}
-          setSearch={setSearch}
-          category={category}
-          allHymns={allHymns}
-          filtered={filtered}
-          selected={selected}
-          setSelected={setSelected}
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-        />
-        <HymnReader
-          allHymns={allHymns}
-          selected={selected}
-          filtered={filtered}
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          shareHymn={shareHymn}
-          copied={copied}
-          fontSize={fontSize}
-          setFontSize={setFontSize}
-          goToAdjacent={goToAdjacent}
-        />
+        {isMobile && sidebarOpen && (
+          <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+        )}
+        {showSidebar && (
+          <Sidebar
+            navCategories={navCategories}
+            category={category}
+            setCategory={(c) => {
+              setCategory(c);
+              if (isMobile) setSidebarOpen(false);
+            }}
+            favorites={favorites}
+            dark={dark}
+            setDark={setDark}
+            fontSize={fontSize}
+            setFontSize={setFontSize}
+            isMobile={isMobile}
+            onClose={() => setSidebarOpen(false)}
+          />
+        )}
+        {showList && (
+          <HymnList
+            search={search}
+            setSearch={setSearch}
+            category={category}
+            allHymns={allHymns}
+            filtered={filtered}
+            selected={selected}
+            setSelected={setSelected}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            isMobile={isMobile}
+            onOpenMenu={() => setSidebarOpen(true)}
+          />
+        )}
+        {showReader && (
+          <HymnReader
+            allHymns={allHymns}
+            selected={selected}
+            filtered={filtered}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            shareHymn={shareHymn}
+            copied={copied}
+            fontSize={fontSize}
+            setFontSize={setFontSize}
+            goToAdjacent={goToAdjacent}
+            isMobile={isMobile}
+            onBack={handleBackToList}
+          />
+        )}
       </div>
     </div>
   );

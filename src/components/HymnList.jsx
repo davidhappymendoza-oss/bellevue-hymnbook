@@ -1,9 +1,11 @@
 import React from 'react';
-import { Search, Star, BookOpen } from 'lucide-react';
+import { Search, Star, BookOpen, Menu } from 'lucide-react';
 
 /**
- * Panel central (~24%): barra de búsqueda y lista de himnos filtrados.
- * Misma lógica y estructura visual del artefacto original.
+ * Panel central (~24% en escritorio): barra de búsqueda y lista de
+ * himnos filtrados. En móvil ocupa el 100% del ancho e incluye una
+ * barra superior con el botón de menú para abrir las categorías.
+ * Misma lógica del artefacto original.
  */
 export default function HymnList({
   search,
@@ -15,9 +17,21 @@ export default function HymnList({
   setSelected,
   favorites,
   toggleFavorite,
+  isMobile,
+  onOpenMenu,
 }) {
   return (
     <div className="center-panel">
+      {isMobile && (
+        <div className="mobile-topbar">
+          <span className="font-display" style={{ fontWeight: 700, fontSize: 15 }}>
+            Himnario Bellevue
+          </span>
+          <button className="menu-btn" onClick={onOpenMenu} aria-label="Abrir menú de categorías">
+            <Menu size={18} />
+          </button>
+        </div>
+      )}
       <div className="search-wrap">
         <Search
           size={15}
