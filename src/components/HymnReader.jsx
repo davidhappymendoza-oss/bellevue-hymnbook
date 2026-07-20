@@ -55,7 +55,7 @@ export default function HymnReader({
         </div>
       )}
       {selected && (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div className="reader-inner" style={{ display: 'flex', flexDirection: 'column' }}>
           <div className="reader-header">
             <div className="header-icon-slot">
               <img src={logoIcon} alt="" />
@@ -81,7 +81,7 @@ export default function HymnReader({
               </button>
             </div>
           </div>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '48px 56px 120px 56px' }}>
+          <div className="reader-content">
             <div className="lyrics-body">
               {selected.lyrics.map((block, i) => (
                 <div key={i} className={`lyrics-verse ${block.type === 'coro' ? 'coro' : ''}`}>

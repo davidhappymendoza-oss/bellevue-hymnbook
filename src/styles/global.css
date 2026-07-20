@@ -3,8 +3,9 @@
  * sitio real a pantalla completa (antes vivía embebida como artefacto
  * dentro de una tarjeta de Claude.ai con una altura fija de 680px).
  * No toca ni un solo estilo del himnario en sí; solo asegura que
- * html/body/#root ocupen el 100% del viewport en cualquier
- * computadora, tableta o celular.
+ * html/body/#root ocupen al menos el 100% del viewport en cualquier
+ * computadora, tableta o celular, SIN bloquear el scroll vertical
+ * (por eso se usa min-height y nunca overflow:hidden aquí).
  */
 * {
   box-sizing: border-box;
@@ -13,7 +14,9 @@
 html,
 body,
 #root {
-  height: 100%;
+  height: 100%; /* necesario en escritorio para que los tres paneles se estiren a pantalla completa */
+  min-height: 100vh;
+  min-height: 100dvh; /* alto real de viewport en móviles (evita el "salto" de la barra de Safari/Chrome) */
   width: 100%;
   margin: 0;
   padding: 0;
@@ -21,4 +24,18 @@ body,
 
 body {
   background: #060f13;
+  overflow-x: hidden; /* evita scroll horizontal; el vertical siempre queda libre */
+}
+
+/* En móvil, la altura fija (100%) deja de forzarse para que la
+   página pueda crecer más que el viewport y el scroll vertical
+   funcione siempre. En escritorio esto NO se toca. */
+@media (max-width: 768px) {
+  html,
+  body,
+  #root {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
 }

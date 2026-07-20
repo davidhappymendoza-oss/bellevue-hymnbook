@@ -118,11 +118,11 @@ export default function Himnario() {
   const showReader = !isMobile || (!!selected && !sidebarOpen);
 
   return (
-    <div className={theme} style={{ minHeight: '100vh', height: '100%' }}>
+    <div
+      className={theme}
+      style={isMobile ? { minHeight: '100dvh' } : { minHeight: '100vh', height: '100%' }}
+    >
       <div className="himnario-root">
-        {isMobile && sidebarOpen && (
-          <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
-        )}
         {showSidebar && (
           <Sidebar
             navCategories={navCategories}

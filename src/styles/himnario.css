@@ -164,6 +164,7 @@
 
         .list-header { padding: 4px 20px 12px 20px; display: flex; justify-content: space-between; align-items: baseline; }
         .list-count { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+        .hymn-list-scroll { flex: 1; overflow-y: auto; padding: 4px 16px 20px 16px; }
 
         .badge {
           width: 38px; height: 38px;
@@ -291,6 +292,9 @@
         .reader-footer-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .reader-footer-step { display: flex; align-items: center; gap: 6px; }
 
+        .reader-inner { height: 100%; }
+        .reader-content { flex: 1; overflow-y: auto; padding: 48px 56px 120px 56px; }
+
         .toast {
           position: absolute; top: 22px; right: 48px; background: var(--accent); color: var(--badge-text);
           font-size: 12.5px; font-weight: 700; padding: 9px 15px; border-radius: 12px;
@@ -303,44 +307,75 @@
            RESPONSIVE: pantallas menores a 768px (navegación móvil)
            Todo lo de arriba (escritorio) queda sin tocar.
            En móvil, App.jsx solo monta UN panel a la vez
-           (Sidebar como superposición, o Lista, o Lector), así que
-           aquí basta con hacer que ese panel ocupe el 100% del ancho.
+           (Sidebar, o Lista, o Lector), así que aquí basta con:
+           1) dejar que ese panel ocupe el 100% del ancho, y
+           2) NO atraparlo dentro de un contenedor de altura fija
+              con overflow:hidden, para que el scroll vertical
+              funcione siempre (lista completa y letra completa).
            ===================================================== */
         @media (max-width: 768px) {
           .himnario-root {
             flex-direction: column;
+            /* Ya no se fuerza height:100% + overflow:hidden (eso
+               era lo que impedía el scroll). Se deja crecer con el
+               contenido y el scroll lo maneja la página normalmente. */
+            height: auto;
             min-height: 100vh;
+            min-height: 100dvh;
+            overflow-y: visible;
+            overflow-x: hidden;
             border-radius: 0;
           }
 
-          /* Barra lateral: se muestra como superposición a pantalla completa */
+          /* Barra lateral: en móvil ocupa toda la pantalla, pero como
+             un bloque normal (sin position:fixed) porque, cuando está
+             abierta, la Lista y el Lector no se montan (ver App.jsx),
+             así que no hace falta superponerla sobre nada. */
           .sidebar {
             width: 100%;
             min-width: 0;
-            height: 100%;
-            position: fixed;
-            inset: 0;
-            z-index: 60;
+            height: auto;
+            min-height: 100vh;
+            min-height: 100dvh;
           }
           .sidebar .brand-row { padding-top: 12px; }
+          .sidebar .nav-scroll {
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+          }
 
-          /* Lista y lector: 100% del ancho, uno a la vez */
+          /* Lista: 100% del ancho, alto natural, con scroll propio */
           .center-panel {
             width: 100%;
             min-width: 0;
+            height: auto;
             border-right: none;
           }
+          .hymn-list-scroll {
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          /* Lector: 100% del ancho, alto natural, con scroll propio
+             hasta la última estrofa y los controles inferiores */
           .reader-panel {
             width: 100%;
             min-width: 0;
+            height: auto;
           }
-
-          /* Fondo oscuro detrás de la barra lateral superpuesta */
-          .sidebar-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 55;
+          .reader-inner { height: auto; }
+          .reader-content {
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+          }
+          /* El pie del lector deja de estar fijo/superpuesto en
+             móvil: pasa a formar parte del flujo normal, justo
+             después de la última estrofa, para que se llegue a él
+             haciendo scroll en vez de quedar flotando sobre la letra. */
+          .reader-footer {
+            position: static;
+            padding: 16px 20px 24px 20px;
+            box-shadow: none;
           }
 
           /* Barra superior móvil (usada por Sidebar, HymnList y HymnReader) */
@@ -374,7 +409,6 @@
 
           /* Ajustes de espaciado del lector en pantallas angostas */
           .reader-header { padding: 18px 20px; flex-wrap: wrap; }
-          .reader-header + div { padding: 24px 20px 120px 20px !important; }
-          .reader-footer { padding: 14px 20px; }
+          .reader-content { padding: 24px 20px 40px 20px; }
           .toast { right: 20px; top: 16px; }
         }

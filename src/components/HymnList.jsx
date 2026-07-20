@@ -53,7 +53,7 @@ export default function HymnList({
         </h2>
         <span className="list-count">{filtered.length} himnos</span>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 20px 16px' }}>
+      <div className="hymn-list-scroll">
         {allHymns.length === 0 && (
           <div style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: 60, padding: '0 20px' }}>
             <div className="reader-empty-icon" style={{ margin: '0 auto 16px auto' }}>
